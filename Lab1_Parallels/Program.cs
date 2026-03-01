@@ -8,12 +8,12 @@ namespace Lav
         {
             int n = int.Parse(Console.ReadLine());
             Random rnd = new();
-            Controller controller = new();
+            Controller controller = new(n);
             Func<int,double, Controller, double> f = (i, p,  c) =>
             {
                 double result = 0;
                 int count = 0;
-                while (!c.IsRunning)
+                while (!c[i-1])
                 {
                     result += p;
                     count++;
