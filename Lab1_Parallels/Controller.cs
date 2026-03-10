@@ -7,12 +7,12 @@ namespace Lab1_Parallels
     public class Controller
     {
         private volatile bool[] isRunning;
-        int[] times;
+        (int,int)[] times;
         Dictionary<int, int> dict = new Dictionary<int, int>()
         {
-            { 0, 3000 },
+            { 0, 7000 },
             { 1, 5000 },
-            { 2, 7000 },
+            { 2, 3000 },
             { 3, 10000 },
             { 4, 12000 },
             { 5, 15000 },
@@ -24,24 +24,24 @@ namespace Lab1_Parallels
         public Controller(int count) 
         { 
             isRunning = new bool[count];
-            times = new int[count]; 
+            times = new (int,int)[count]; 
             Random rnd = new();
             for (int i = 0; i < count; i++)
             {
-                times[i] = dict[rnd.Next(0,6)];
+                times[i].Item1 = dict[rnd.Next(0,6)];
+                times[i].Item2 = i;
             }
         }
 
         public void Start()
         {
-            for (int i = 0; i < isRunning.Length; i++)
+            times = times.OrderBy(times => times.Item1).ToArray();
+            Thread.Sleep(times[0].Item1);
+            isRunning[times[0].Item2] = true;
+            for (int i = 1; i < isRunning.Length; i++)
             {
-                int localI = i;
-                new Thread(() =>
-                {
-                    Thread.Sleep(times[localI]);
-                    isRunning[localI] = true;
-                }).Start();
+                Thread.Sleep(times[i].Item1 - times[i - 1].Item1);
+                isRunning[times[i].Item2] = true;
             }
         }
     }
